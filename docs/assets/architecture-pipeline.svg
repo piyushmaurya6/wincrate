@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 290" width="1200" height="290" role="img" aria-label="WinCrate 4-Stage Repackaging Pipeline">
+  <rect x="0" y="0" width="1200" height="290" rx="12" fill="#ECEAE4"/>
+  <rect x="12" y="12" width="1176" height="266" rx="9" fill="#F7F6F2" stroke="#D2CEC4" stroke-width="1.5"/>
+
+  <text x="36" y="46" font-family="'Segoe UI', -apple-system, sans-serif" font-size="18" font-weight="700" fill="#191917">Repackaging Architecture — Source PC to Target PC</text>
+  <text x="1164" y="46" text-anchor="end" font-family="Consolas, 'Cascadia Mono', monospace" font-size="12" fill="#53514B">100% OFFLINE PIPELINE</text>
+  <line x1="36" y1="60" x2="1164" y2="60" stroke="#D2CEC4" stroke-width="1"/>
+
+  <!-- Stage 1 -->
+  <g transform="translate(36, 80)">
+    <rect x="0" y="0" width="258" height="174" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1.5"/>
+    <rect x="0" y="0" width="258" height="34" rx="8" fill="#E3E0D8"/>
+    <rect x="0" y="24" width="258" height="10" fill="#E3E0D8"/>
+    <text x="14" y="22" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#191917">STAGE 1 · DISCOVERY</text>
+    <text x="14" y="58" font-family="'Segoe UI', sans-serif" font-size="13.5" font-weight="600" fill="#191917">Installed Software Scanner</text>
+    <text x="14" y="82" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• HKLM / WOW6432 / HKCU Uninstall</text>
+    <text x="14" y="103" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Binary [MS-SHLLINK] .lnk parser</text>
+    <text x="14" y="124" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Shared vendor folder narrower</text>
+    <text x="14" y="145" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Kernel driver / service guard</text>
+  </g>
+
+  <!-- Arrow 1->2 -->
+  <g transform="translate(298, 158)" stroke="#B53E19" stroke-width="2.2" fill="none">
+    <line x1="2" y1="9" x2="24" y2="9"/>
+    <polyline points="18,3 25,9 18,15"/>
+  </g>
+
+  <!-- Stage 2 -->
+  <g transform="translate(328, 80)">
+    <rect x="0" y="0" width="258" height="174" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1.5"/>
+    <rect x="0" y="0" width="258" height="34" rx="8" fill="#E3E0D8"/>
+    <rect x="0" y="24" width="258" height="10" fill="#E3E0D8"/>
+    <text x="14" y="22" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#191917">STAGE 2 · SNAPSHOT</text>
+    <text x="14" y="58" font-family="'Segoe UI', sans-serif" font-size="13.5" font-weight="600" fill="#191917">Footprint &amp; State Capture</text>
+    <text x="14" y="82" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Win32 PrivateExtractIconsW .ico</text>
+    <text x="14" y="103" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• %APPDATA% &amp; %LOCALAPPDATA%</text>
+    <text x="14" y="124" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Excludes GPU / browser caches</text>
+    <text x="14" y="145" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Tokenizes {{INSTALL_DIR}} paths</text>
+  </g>
+
+  <!-- Arrow 2->3 -->
+  <g transform="translate(590, 158)" stroke="#B53E19" stroke-width="2.2" fill="none">
+    <line x1="2" y1="9" x2="24" y2="9"/>
+    <polyline points="18,3 25,9 18,15"/>
+  </g>
+
+  <!-- Stage 3 -->
+  <g transform="translate(620, 80)">
+    <rect x="0" y="0" width="258" height="174" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1.5"/>
+    <rect x="0" y="0" width="258" height="34" rx="8" fill="#F6E6DF"/>
+    <rect x="0" y="24" width="258" height="10" fill="#F6E6DF"/>
+    <text x="14" y="22" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#B53E19">STAGE 3 · PRESS (.EXE)</text>
+    <text x="14" y="58" font-family="'Segoe UI', sans-serif" font-size="13.5" font-weight="600" fill="#191917">Native Stub + PE Overlay</text>
+    <text x="14" y="82" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Compiles C# stub via OS csc.exe</text>
+    <text x="14" y="103" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Embeds native Uninstall.exe</text>
+    <text x="14" y="124" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Streams 0-based ZIP + WCRATE01</text>
+    <text x="14" y="145" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Verifies SHA-256 &amp; footer magic</text>
+  </g>
+
+  <!-- Arrow 3->4 -->
+  <g transform="translate(882, 158)" stroke="#B53E19" stroke-width="2.2" fill="none">
+    <line x1="2" y1="9" x2="24" y2="9"/>
+    <polyline points="18,3 25,9 18,15"/>
+  </g>
+
+  <!-- Stage 4 -->
+  <g transform="translate(912, 80)">
+    <rect x="0" y="0" width="252" height="174" rx="8" fill="#FFFFFF" stroke="#B8DEC6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="252" height="34" rx="8" fill="#E3F1E8"/>
+    <rect x="0" y="24" width="252" height="10" fill="#E3F1E8"/>
+    <text x="14" y="22" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#1A5432">STAGE 4 · TARGET PC</text>
+    <text x="14" y="58" font-family="'Segoe UI', sans-serif" font-size="13.5" font-weight="600" fill="#191917">Zero-Dependency Install</text>
+    <text x="14" y="82" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• DPI-aware GUI Wizard or --silent</text>
+    <text x="14" y="103" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Bounded SubStream extraction</text>
+    <text x="14" y="124" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Re-binds Registry &amp; AppData</text>
+    <text x="14" y="145" font-family="'Segoe UI', sans-serif" font-size="12.5" fill="#53514B">• Registers shortcuts &amp; Uninstall</text>
+  </g>
+</svg>

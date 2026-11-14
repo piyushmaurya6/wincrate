@@ -1,0 +1,84 @@
+/*
+ * WinCrate Design System Tokens
+ * Source of truth: DESIGN.md (deal 16364338 · linen-press)
+ */
+
+:root {
+  /* Fonts */
+  --font-sans: "Hanken Grotesk", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+
+  /* Type scale */
+  --type-h1-size: 20px;
+  --type-h1-lh: 1.25;
+  --type-h2-size: 15px;
+  --type-h2-lh: 1.3;
+  --type-body-size: 14px;
+  --type-body-lh: 1.45;
+  --type-small-size: 13px;
+  --type-small-lh: 1.4;
+  --type-label-size: 13px;
+  --type-label-lh: 1.2;
+  --type-caption-size: 12px;
+  --type-caption-lh: 1.35;
+
+  /* Color roles (linen-press) */
+  --color-canvas: #ECEAE4;
+  --color-surface: #F7F6F2;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-sunken: #E3E0D8;
+  --color-text: #191917;
+  --color-text-muted: #53514B;
+  --color-border: #D2CEC4;
+  --color-border-strong: #7D7A71;
+  --color-action: #B53E19;
+  --color-action-subtle: #F6E6DF;
+  --color-on-action: #FFFFFF;
+  --color-focus: #B53E19;
+  --color-ready-bg: #E3F1E8;
+  --color-ready-ink: #1A5432;
+  --color-warning-bg: #F8ECD8;
+  --color-warning-ink: #6E4208;
+  --color-danger: #A62424;
+  --color-danger-bg: #F9E4E4;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radii */
+  --radius-control: 6px;
+  --radius-container: 10px;
+  --radius-overlay: 12px;
+  --radius-pill: 9999px;
+
+  /* Control heights */
+  --control-sm: 32px;
+  --control-md: 36px;
+  --control-lg: 42px;
+
+  /* Motion mappings for interaction-kit.css */
+  --ui-press-down: 80ms;
+  --ui-release: 520ms;
+  --ui-hover: 180ms;
+  --ui-focus: 150ms;
+  --ui-state: 240ms;
+  --ui-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ui-ease-color: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-focus-ring: var(--color-focus);
+  --ui-switch-off: var(--color-border-strong);
+  --ui-switch-on: var(--color-action);
+  --ui-check-border: var(--color-border-strong);
+  --ui-check-hover: var(--color-text);
+  --ui-check-on: var(--color-action);
+  --ui-check-halo: rgb(181 62 25 / 0.14);
+  --ui-seg-track: var(--color-surface-sunken);
+  --ui-seg-indicator: var(--color-surface-raised);
+  --ui-highlight: rgb(255 255 255 / 0.22);
+  --ui-highlight-on-light: rgb(25 25 23 / 0.08);
+}

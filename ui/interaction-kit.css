@@ -1,0 +1,269 @@
+/*
+ * better-design · interaction kit (CSS) mapped to WinCrate DESIGN.md tokens
+ */
+
+:root {
+  --ui-spring-pop: linear(0, 0.044, 0.155, 0.307, 0.475, 0.642, 0.794, 0.922, 1.023, 1.094, 1.139, 1.16, 1.162, 1.15, 1.129, 1.103, 1.075, 1.049, 1.025, 1.006, 0.991, 0.981, 0.976, 0.973, 0.974, 0.977, 0.981, 0.985, 0.989, 0.994, 0.997, 1, 1.002, 1.003, 1.004, 1.004, 1.004, 1.004, 1.003, 1.002, 1);
+  --ui-spring-snap: linear(0, 0.03, 0.105, 0.207, 0.32, 0.435, 0.545, 0.644, 0.732, 0.806, 0.867, 0.915, 0.953, 0.981, 1.001, 1.015, 1.023, 1.027, 1.028, 1.028, 1.026, 1.023, 1.02, 1.016, 1.013, 1.01, 1.008, 1.006, 1.004, 1.003, 1);
+}
+
+.ui-press {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transform: scale(1);
+  transition:
+    transform var(--ui-release) var(--ui-spring-pop),
+    background-color var(--ui-hover) var(--ui-ease-color),
+    border-color var(--ui-hover) var(--ui-ease-color),
+    color var(--ui-hover) var(--ui-ease-color),
+    box-shadow var(--ui-hover) var(--ui-ease-color),
+    filter var(--ui-hover) var(--ui-ease-color),
+    outline-offset var(--ui-focus) var(--ui-ease-out),
+    outline-color var(--ui-focus) var(--ui-ease-out);
+}
+.ui-press:active:not(:disabled):not([aria-disabled="true"]),
+.ui-press[data-pressed] {
+  transform: scale(var(--ui-press-scale, 0.96));
+  filter: brightness(var(--ui-press-brightness, 0.94));
+  transition-duration: var(--ui-press-down);
+  transition-timing-function: var(--ui-ease-out);
+}
+.ui-press--on-dark { --ui-press-brightness: 1.14; }
+.ui-press--surface { --ui-press-scale: 0.988; }
+
+.ui-press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--ui-px, 50%) var(--ui-py, 50%), var(--ui-bloom, var(--ui-highlight-on-light)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 600ms var(--ui-ease-out);
+}
+.ui-press--on-dark::after { --ui-bloom: var(--ui-highlight); }
+.ui-press[data-pressed]::after { opacity: 1; transition-duration: 90ms; }
+
+@media (hover: hover) and (pointer: fine) {
+  .ui-press:hover:not(:disabled) { filter: brightness(var(--ui-hover-brightness, 0.97)); }
+  .ui-press--on-dark:hover:not(:disabled) { --ui-hover-brightness: 1.08; }
+}
+
+.ui-press:disabled, .ui-press[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: none;
+}
+
+.ui-focus { outline: 2px solid transparent; outline-offset: 5px; }
+.ui-focus:not(.ui-press, .ui-dim, .ui-switch, .ui-check, .ui-link, .ui-field, .ui-segmented > button) {
+  transition: outline-offset var(--ui-focus) var(--ui-ease-out), outline-color var(--ui-focus) var(--ui-ease-out);
+}
+.ui-focus:focus-visible { outline-color: var(--ui-focus-ring); outline-offset: 2px; }
+
+/* Switch (44x24 compact desktop scale) */
+.ui-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+  background: var(--ui-switch-off);
+  transition:
+    background-color var(--ui-state) var(--ui-ease-color),
+    filter var(--ui-hover) var(--ui-ease-color),
+    outline-offset var(--ui-focus) var(--ui-ease-out),
+    outline-color var(--ui-focus) var(--ui-ease-out);
+}
+.ui-switch[aria-checked="true"] { background: var(--ui-switch-on); }
+.ui-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  box-shadow: 0 1px 3px rgb(25 25 23 / 0.25);
+  transition: left 380ms var(--ui-spring-snap), width 150ms var(--ui-ease-out);
+}
+.ui-switch[aria-checked="true"]::after { left: 22px; }
+.ui-switch:active:not(:disabled)::after, .ui-switch[data-pressed]:not(:disabled)::after { width: 25px; }
+.ui-switch[aria-checked="true"]:active:not(:disabled)::after,
+.ui-switch[aria-checked="true"][data-pressed]:not(:disabled)::after { left: 17px; }
+.ui-switch:disabled { cursor: not-allowed; opacity: 0.45; }
+
+/* Checkbox (20x20 desktop scale) */
+.ui-check {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-control);
+  flex: none;
+  cursor: pointer;
+  padding: 0;
+  border: 1.5px solid var(--ui-check-border);
+  background: var(--color-surface-raised);
+  transition:
+    background-color 180ms var(--ui-ease-color),
+    border-color 180ms var(--ui-ease-color),
+    transform var(--ui-release) var(--ui-spring-pop),
+    outline-offset var(--ui-focus) var(--ui-ease-out),
+    outline-color var(--ui-focus) var(--ui-ease-out),
+    box-shadow 260ms var(--ui-ease-out);
+}
+.ui-check:active:not(:disabled) {
+  transform: scale(0.88);
+  box-shadow: 0 0 0 4px var(--ui-check-halo);
+  transition-duration: 180ms, 180ms, var(--ui-press-down), var(--ui-focus), var(--ui-focus), 60ms;
+}
+.ui-check[aria-checked="true"] {
+  background: var(--ui-check-on);
+  border-color: var(--ui-check-on);
+}
+.ui-check svg { width: 13px; height: 13px; overflow: visible; pointer-events: none; }
+.ui-check path {
+  fill: none;
+  stroke: var(--color-on-action);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 120ms var(--ui-ease-out);
+}
+.ui-check[aria-checked="true"] path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 240ms var(--ui-ease-out) 40ms;
+}
+.ui-check:disabled { cursor: not-allowed; opacity: 0.45; }
+
+/* Segmented control */
+.ui-segmented {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-md);
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--ui-seg-track);
+  border: 1px solid var(--color-border);
+  isolation: isolate;
+}
+.ui-segmented > button {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: 500;
+  line-height: 1;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.82;
+  transition:
+    opacity var(--ui-hover) var(--ui-ease-color),
+    color var(--ui-hover) var(--ui-ease-color),
+    transform var(--ui-release) var(--ui-spring-pop),
+    outline-offset var(--ui-focus) var(--ui-ease-out),
+    outline-color var(--ui-focus) var(--ui-ease-out);
+}
+.ui-segmented > button[aria-selected="true"],
+.ui-segmented > button[aria-pressed="true"] {
+  color: var(--color-text);
+  font-weight: 600;
+  opacity: 1;
+}
+.ui-segmented > button:active {
+  transform: scale(0.95);
+  opacity: 0.55;
+  transition-duration: 40ms, var(--ui-hover), var(--ui-press-down), var(--ui-focus), var(--ui-focus);
+}
+.ui-segmented__indicator {
+  position: absolute;
+  z-index: 0;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: var(--ui-seg-w, 0);
+  border-radius: var(--radius-pill);
+  background: var(--ui-seg-indicator);
+  box-shadow: 0 1px 2px rgb(25 25 23 / 0.12);
+  transform: translateX(var(--ui-seg-x, 0));
+  transition: transform 420ms var(--ui-spring-snap), width 420ms var(--ui-spring-snap);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ui-switch:hover:not(:disabled) { filter: brightness(1.08); }
+  .ui-check:hover:not(:disabled):not([aria-checked="true"]) { border-color: var(--ui-check-hover); }
+  .ui-segmented > button:hover:not([aria-selected="true"]):not([aria-pressed="true"]) { color: var(--color-text); opacity: 0.95; }
+  .ui-segmented > button:hover:not([aria-selected="true"]):not([aria-pressed="true"]):active { transform: scale(0.95); opacity: 0.55; }
+}
+
+.ui-field {
+  transition: border-color var(--ui-hover) var(--ui-ease-color), box-shadow var(--ui-focus) var(--ui-ease-out);
+}
+.ui-field:focus-visible, .ui-field:focus {
+  outline: none;
+  border-color: var(--ui-focus-ring);
+  box-shadow: 0 0 0 3px rgb(181 62 25 / 0.22);
+}
+
+@keyframes ui-shake {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+.ui-shake { animation: ui-shake 300ms var(--ui-ease-out); }
+
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+.ui-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: ui-spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-press, .ui-check, .ui-segmented > button {
+    transition-property: background-color, border-color, color, filter, opacity, box-shadow, outline-offset, outline-color;
+  }
+  .ui-press:active:not(:disabled):not([aria-disabled="true"]),
+  .ui-press[data-pressed],
+  .ui-check:active:not(:disabled),
+  .ui-segmented > button:active,
+  .ui-segmented > button:hover:not([aria-selected="true"]):not([aria-pressed="true"]):active {
+    transform: none;
+  }
+  .ui-switch:active:not(:disabled), .ui-switch[data-pressed]:not(:disabled) {
+    filter: brightness(0.9);
+  }
+  .ui-switch:active:not(:disabled)::after, .ui-switch[data-pressed]:not(:disabled)::after {
+    width: 20px;
+  }
+  .ui-switch[aria-checked="true"]:active:not(:disabled)::after,
+  .ui-switch[aria-checked="true"][data-pressed]:not(:disabled)::after {
+    left: 22px;
+  }
+  .ui-switch::after, .ui-segmented__indicator { transition-duration: 0.01ms; }
+  .ui-shake { animation: none; }
+}

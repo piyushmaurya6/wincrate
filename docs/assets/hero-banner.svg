@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="WinCrate — Offline Windows Software Repackager">
+  <defs>
+    <pattern id="linenGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#E2DFD6" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Outer Linen Canvas -->
+  <rect x="0" y="0" width="1200" height="320" rx="14" fill="#ECEAE4"/>
+  <rect x="14" y="14" width="1172" height="292" rx="10" fill="#F7F6F2" stroke="#D2CEC4" stroke-width="1.5"/>
+  <rect x="15" y="15" width="1170" height="290" rx="9" fill="url(#linenGrid)" opacity="0.55"/>
+
+  <!-- Left Rust-Orange Press Rule -->
+  <rect x="14" y="42" width="6" height="236" rx="3" fill="#B53E19"/>
+
+  <!-- Isometric Crate Emblem Card -->
+  <g transform="translate(60, 66)">
+    <rect x="0" y="0" width="96" height="96" rx="14" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1.5"/>
+    <rect x="8" y="8" width="80" height="80" rx="10" fill="#F6E6DF"/>
+    <g transform="translate(20, 18)" fill="none" stroke="#B53E19" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M50 16.5a4.5 4.5 0 0 0-2.25-3.9L30.25 2.5a4.5 4.5 0 0 0-4.5 0L8.25 12.6A4.5 4.5 0 0 0 6 16.5v20.2a4.5 4.5 0 0 0 2.25 3.9l17.5 10.1a4.5 4.5 0 0 0 4.5 0l17.5-10.1A4.5 4.5 0 0 0 50 36.7Z"/>
+      <path d="M6.7 14.3 28 26.6l21.3-12.3"/>
+      <path d="M28 51.3V26.6"/>
+      <path d="M17.4 8.2 38.6 20.5" stroke-width="2.4" opacity="0.75"/>
+    </g>
+  </g>
+
+  <!-- Main Heading & Tagline -->
+  <text x="184" y="106" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif" font-size="46" font-weight="700" letter-spacing="-0.8" fill="#191917">WinCrate</text>
+  <rect x="398" y="77" width="82" height="28" rx="14" fill="#E3F1E8" stroke="#B8DEC6" stroke-width="1"/>
+  <text x="439" y="96" text-anchor="middle" font-family="Consolas, 'Cascadia Mono', monospace" font-size="13" font-weight="600" fill="#1A5432">v1.0.0</text>
+
+  <text x="184" y="144" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="500" fill="#3B3935">The offline "APK Extractor" for Windows — turn any installed PC program into a shareable Setup .exe</text>
+  <text x="184" y="174" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif" font-size="15" fill="#53514B">Snapshots program files, .lnk shortcuts, optional AppData configs, and dynamic HKCU Registry paths using Windows' built-in C# compiler.</text>
+
+  <!-- Ruled Divider -->
+  <line x1="60" y1="206" x2="1140" y2="206" stroke="#D2CEC4" stroke-width="1"/>
+
+  <!-- Spec Stamps Row -->
+  <g transform="translate(60, 226)">
+    <rect x="0" y="0" width="248" height="52" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1"/>
+    <text x="16" y="21" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" font-weight="600" fill="#B53E19">01 / ZERO EXTERNAL RUNTIME</text>
+    <text x="16" y="39" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#191917">Built-in .NET csc.exe stub</text>
+
+    <rect x="266" y="0" width="262" height="52" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1"/>
+    <text x="282" y="21" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" font-weight="600" fill="#B53E19">02 / PE-OVERLAY STREAMING</text>
+    <text x="282" y="39" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#191917">Multi-GB installs in &lt;32 MB RAM</text>
+
+    <rect x="546" y="0" width="268" height="52" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1"/>
+    <text x="562" y="21" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" font-weight="600" fill="#B53E19">03 / APPDATA + CACHE FILTER</text>
+    <text x="562" y="39" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#191917">Carries plugins, skips temp bloat</text>
+
+    <rect x="832" y="0" width="248" height="52" rx="8" fill="#FFFFFF" stroke="#D2CEC4" stroke-width="1"/>
+    <text x="848" y="21" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" font-weight="600" fill="#B53E19">04 / GUI + SILENT CLI</text>
+    <text x="848" y="39" font-family="Consolas, 'Cascadia Mono', monospace" font-size="12.5" font-weight="500" fill="#191917">--silent --dir="C:\Apps"</text>
+  </g>
+</svg>

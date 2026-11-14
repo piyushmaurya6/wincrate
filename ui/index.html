@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WinCrate — Windows Software Packager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="interaction-kit.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Command Bar -->
+    <header class="top-bar" data-ui-group="topbar">
+      <div class="top-bar__left">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+            <path d="m3.3 7 8.7 5 8.7-5"/>
+            <path d="M12 22V12"/>
+          </svg>
+          <span>WinCrate</span>
+        </div>
+
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input id="search-input" type="search" class="search-input ui-field" placeholder="Filter installed software (Ctrl+F)" aria-label="Filter installed software">
+        </div>
+
+        <div id="filter-tabs" role="tablist" aria-label="Readiness filter">
+          <button type="button" role="tab" aria-selected="true" class="ui-focus" data-filter="packable">Packable</button>
+          <button type="button" role="tab" aria-selected="false" class="ui-focus" data-filter="all">All installed</button>
+        </div>
+      </div>
+
+      <div class="top-bar__right">
+        <button id="output-dir-btn" type="button" class="output-pill ui-press ui-focus" title="Change folder where standalone .exe packages are saved">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+          </svg>
+          <span id="output-dir-text" class="output-pill__path">Loading...</span>
+          <span id="output-free-text" class="output-pill__free">--</span>
+        </button>
+
+        <button id="refresh-btn" type="button" class="btn btn--secondary ui-press ui-focus">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+          <span>Rescan</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 3-Queue Shell Command Board -->
+    <main class="board">
+      <!-- Column 1: Installed Software Queue -->
+      <section class="panel panel--queue" aria-labelledby="queue-heading">
+        <div class="panel__header">
+          <h2 id="queue-heading" class="panel__title">Installed software</h2>
+          <span id="queue-count" class="panel__count">0</span>
+        </div>
+
+        <div id="app-list" class="app-list" role="listbox" aria-labelledby="queue-heading">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+
+        <!-- Drop Zone + Choose Folder -->
+        <div class="drop-footer">
+          <div id="drop-zone" class="drop-zone" role="region" aria-label="Package custom application folder">
+            <div class="drop-zone__row">
+              <span class="drop-zone__label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 10v6"/>
+                  <path d="M9 13h6"/>
+                  <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                </svg>
+                <span>Drop an app folder or .exe</span>
+              </span>
+              <button id="choose-custom-btn" type="button" class="btn btn--sm btn--secondary ui-press ui-focus"><span>Choose folder</span></button>
+            </div>
+            <p class="drop-zone__hint">Packages portable or unlisted program folders directly.</p>
+            <p id="drop-zone-error" class="drop-zone__error" role="alert" hidden></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Column 2: Package Workbench -->
+      <section class="panel panel--workbench" aria-labelledby="wb-app-title">
+        <div class="panel__header">
+          <h2 class="panel__title">Package specification</h2>
+          <div id="wb-status-chip"></div>
+        </div>
+
+        <div id="wb-loading" class="workbench-body" hidden>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row" style="height: 110px;"></div>
+          <div class="skeleton-row" style="height: 130px;"></div>
+        </div>
+
+        <div id="wb-empty" class="empty-box" hidden>
+          <strong>Select an installed application</strong>
+          <span>Pick any program from the left queue or choose a custom folder to inspect its files, shortcuts, Registry keys, and AppData settings.</span>
+        </div>
+
+        <div id="wb-content" class="workbench-body" hidden>
+          <!-- Leads with any Compatibility Exception or Error -->
+          <div id="wb-exception" class="notice-banner notice-banner--warn" role="status" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+              <path d="M12 9v4"/>
+              <path d="M12 17h.01"/>
+            </svg>
+            <span id="wb-exception-text"></span>
+            <button id="wb-pick-loc-btn" type="button" class="btn btn--sm btn--secondary ui-press ui-focus" hidden><span>Locate folder</span></button>
+          </div>
+
+          <div id="wb-error" class="notice-banner notice-banner--error" role="alert" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m15 9-6 6"/>
+              <path d="m9 9 6 6"/>
+            </svg>
+            <span id="wb-error-text"></span>
+            <span></span>
+          </div>
+
+          <!-- App Header -->
+          <div class="wb-head">
+            <div id="wb-icon-box" class="wb-head__icon"></div>
+            <div class="wb-head__titles">
+              <h1 id="wb-app-title" class="wb-head__name">Application</h1>
+              <p id="wb-app-sub" class="wb-head__sub"></p>
+            </div>
+          </div>
+
+          <!-- Editable Package Identity -->
+          <div class="field-grid">
+            <div class="field-group">
+              <label for="inp-pkg-name" class="field-label">Package display name</label>
+              <input id="inp-pkg-name" type="text" class="text-input ui-field">
+            </div>
+            <div class="field-group">
+              <label for="inp-pkg-version" class="field-label">Version</label>
+              <input id="inp-pkg-version" type="text" class="text-input ui-field mono-num">
+            </div>
+            <div class="field-group">
+              <label for="sel-main-exe" class="field-label">Primary launcher (.exe)</label>
+              <select id="sel-main-exe" class="select-input ui-field"></select>
+            </div>
+          </div>
+
+          <!-- Footprint Ledger -->
+          <div class="ledger-section">
+            <h3 class="section-heading">Captured footprint</h3>
+            <div class="ledger-table">
+              <div class="ledger-row">
+                <span class="ledger-row__key">Program folder</span>
+                <span id="led-folder-path" class="ledger-row__val" title="">—</span>
+                <span class="ledger-row__metric ledger-row__metric--controls">
+                  <span id="led-folder-size">--</span>
+                  <button id="change-app-folder-btn" type="button" class="btn btn--sm btn--secondary ui-press ui-focus"><span>Change</span></button>
+                </span>
+              </div>
+              <div class="ledger-row">
+                <span class="ledger-row__key">Program files</span>
+                <span id="led-files-desc" class="ledger-row__val">—</span>
+                <span id="led-shortcuts-count" class="ledger-row__metric">—</span>
+              </div>
+              <div class="ledger-row">
+                <span class="ledger-row__key">Registry snapshot</span>
+                <span class="ledger-row__val">HKCU\Software paths rewritten dynamically on target PC</span>
+                <span id="led-reg-count" class="ledger-row__metric">0 keys</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings & Installer Options -->
+          <div class="ledger-section">
+            <h3 class="section-heading">Settings &amp; setup behavior</h3>
+            <div class="options-box">
+              <div class="switch-row">
+                <div class="switch-row__text">
+                  <span id="lbl-appdata-switch" class="switch-row__title">Include settings &amp; AppData</span>
+                  <span id="appdata-fact" class="switch-row__fact">Scanning %APPDATA% and %LOCALAPPDATA%...</span>
+                </div>
+                <button id="sw-appdata" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-appdata-switch" class="ui-switch ui-focus"></button>
+              </div>
+
+              <div class="check-list" data-ui-group="pkg-checks">
+                <div id="chk-row-cache" class="check-item">
+                  <button id="chk-exclude-cache" type="button" role="checkbox" aria-checked="true" aria-labelledby="lbl-chk-cache" class="ui-check ui-focus">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+                  </button>
+                  <span id="lbl-chk-cache">Exclude runtime cache &amp; temp folders</span>
+                </div>
+
+                <div class="check-item">
+                  <button id="chk-registry" type="button" role="checkbox" aria-checked="true" aria-labelledby="lbl-chk-reg" class="ui-check ui-focus">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+                  </button>
+                  <span id="lbl-chk-reg">Include captured HKCU Registry keys</span>
+                </div>
+
+                <div class="check-item">
+                  <button id="chk-desktop" type="button" role="checkbox" aria-checked="true" aria-labelledby="lbl-chk-desk" class="ui-check ui-focus">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+                  </button>
+                  <span id="lbl-chk-desk">Create Desktop shortcut on target PC</span>
+                </div>
+
+                <div class="check-item">
+                  <button id="chk-startmenu" type="button" role="checkbox" aria-checked="true" aria-labelledby="lbl-chk-start" class="ui-check ui-focus">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+                  </button>
+                  <span id="lbl-chk-start">Create Start Menu shortcut &amp; Uninstaller</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Press Action Footer -->
+        <footer id="wb-footer" class="press-bar" data-ui-group="press-bar" hidden>
+          <div id="progress-box" class="progress-box" hidden aria-live="polite">
+            <div class="progress-box__top">
+              <span id="progress-msg">Preparing build...</span>
+              <span id="progress-pct" class="mono-num">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="press-bar__controls">
+            <div class="field-group">
+              <label for="inp-out-file" class="field-label">Standalone installer filename</label>
+              <input id="inp-out-file" type="text" class="text-input ui-field mono-num">
+            </div>
+
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <button id="cancel-build-btn" type="button" class="btn btn--lg btn--secondary ui-press ui-focus" hidden><span>Cancel</span></button>
+              <button id="build-btn" type="button" class="btn btn--lg btn--primary ui-press ui-press--on-dark ui-focus">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+                <span id="build-btn-label">Build standalone .exe</span>
+              </button>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+      <!-- Column 3: Built .exe Crate Shelf -->
+      <aside class="panel panel--crates" aria-labelledby="crates-heading">
+        <div class="panel__header">
+          <h2 id="crates-heading" class="panel__title">Built .exe packages</h2>
+          <button id="open-output-btn" type="button" class="btn btn--sm btn--secondary ui-press ui-focus"><span>Open folder</span></button>
+        </div>
+
+        <div id="crate-list" class="crate-list"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="interaction-kit.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

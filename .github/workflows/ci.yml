@@ -1,0 +1,86 @@
+name: CI — Build & Verify Standalone .exe
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  verify-windows:
+    name: Windows Stub Compile, E2E Repackage & Self-Test
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip -r requirements.txt
+
+      - name: Run WinCrate headless self-test
+        run: python app.py --self-test
+
+      - name: End-to-end synthetic package build & silent install test
+        shell: pwsh
+        run: |
+          python -c "
+          import os, shutil, subprocess, tempfile, time
+          from pathlib import Path
+          from wincrate.scanner import SoftwareScanner
+          from wincrate.builder import PackageBuilder, BuildRequest
+
+          root = Path(tempfile.mkdtemp(prefix='wc_ci_'))
+          src_app = root / 'SampleApp'
+          src_app.mkdir()
+          (src_app / 'run.cmd').write_text('@echo off\r\necho ok\r\n', encoding='utf-8')
+          # Copy a tiny valid Windows binary from System32 as sample launcher
+          shutil.copy2(r'C:\Windows\System32\hostname.exe', src_app / 'SampleApp.exe')
+          (src_app / 'config.json').write_text('{\"theme\":\"linen\"}', encoding='utf-8')
+
+          out_dir = root / 'out'
+          out_dir.mkdir()
+          scanner = SoftwareScanner()
+          rec = scanner.register_custom_folder(str(src_app))
+          builder = PackageBuilder(scanner)
+          job = builder.start_build(BuildRequest(
+              app_id=rec['id'],
+              package_name='SampleApp',
+              package_version='1.0.0',
+              publisher='WinCrate CI',
+              install_location=str(src_app),
+              main_exe_rel='SampleApp.exe',
+              output_dir=str(out_dir),
+              output_filename='SampleApp_1.0.0_Setup.exe',
+              include_appdata=False,
+              include_registry=False,
+          ))
+          while True:
+              st = builder.get_job(job.job_id)
+              if st.status == 'done':
+                  break
+              if st.status in ('error', 'cancelled'):
+                  raise RuntimeError(st.error)
+              time.sleep(0.2)
+
+          setup_exe = Path(st.output_path)
+          assert setup_exe.is_file() and setup_exe.stat().st_size > 20000
+          dest_dir = root / 'installed'
+          res = subprocess.run([
+              str(setup_exe),
+              '--silent',
+              f'--dir={dest_dir}',
+              '--no-shortcuts',
+              '--no-uninstaller',
+          ], check=True)
+          assert (dest_dir / 'SampleApp.exe').is_file()
+          assert (dest_dir / 'config.json').is_file()
+          shutil.rmtree(root, ignore_errors=True)
+          print('E2E_PACKAGE_AND_SILENT_INSTALL_OK')
+          "

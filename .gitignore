@@ -1,0 +1,24 @@
+# Python bytecode & environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Local compiled standalone executables (published via GitHub Releases)
+/*.exe
+/dist/
+/build/
+*.exe.part
+
+# Temporary staging & runtime caches
+.standalone_stage/
+.wc_stage_*/
+.wincrate_runtime/
+
+# OS / Editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

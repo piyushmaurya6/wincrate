@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wincrate"
+version = "1.0.0"
+description = "Offline Windows Software Repackager — turn any installed PC program into a standalone shareable Setup .exe"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+  { name = "Piyush Maurya" }
+]
+keywords = ["windows", "installer", "packager", "repackager", "portable", "setup-exe", "apk-extractor"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Win32 (MS Windows)",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows :: Windows 10",
+  "Operating System :: Microsoft :: Windows :: Windows 11",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: C#",
+  "Topic :: System :: Installation/Setup",
+  "Topic :: System :: Archiving :: Packaging",
+]
+dependencies = [
+  "pywebview>=6.0.0",
+  "pythonnet>=3.0.3",
+  "Pillow>=10.2.0",
+]
+
+[project.urls]
+Repository = "https://github.com/piyushmaurya6/wincrate"
+Issues = "https://github.com/piyushmaurya6/wincrate/issues"
+Releases = "https://github.com/piyushmaurya6/wincrate/releases"
+
+[tool.setuptools.packages.find]
+include = ["wincrate*"]
