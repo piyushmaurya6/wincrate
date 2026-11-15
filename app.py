@@ -4,19 +4,44 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import io
 import json
 import os
 import sys
+import threading
 import time
+import traceback
 from pathlib import Path
 from typing import Any
+
+
+def _ensure_gui_stdio() -> Path | None:
+    """Under pythonw.exe, sys.stdout and sys.stderr are None, breaking logging/StreamHandler."""
+    log_path: Path | None = None
+    if sys.stdout is None or sys.stderr is None:
+        try:
+            local_app = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+            log_dir = Path(local_app) / "WinCrate"
+            log_dir.mkdir(parents=True, exist_ok=True)
+            log_path = log_dir / "wincrate.log"
+            stream = open(log_path, "a", encoding="utf-8", buffering=1, errors="replace")
+        except Exception:
+            stream = io.StringIO()
+        if sys.stdout is None:
+            sys.stdout = stream
+        if sys.stderr is None:
+            sys.stderr = stream
+    return log_path
+
+
+_LOG_FILE = _ensure_gui_stdio()
 
 # Ensure bundled/isolated Python (_pth) always resolves the local wincrate package
 _APP_ROOT = Path(__file__).resolve().parent
 if str(_APP_ROOT) not in sys.path:
     sys.path.insert(0, str(_APP_ROOT))
 
-from wincrate.server import start_local_server
+from wincrate.server import start_local_server  # noqa: E402
 
 
 def _run_self_test(ui_dir: Path) -> int:
@@ -32,7 +57,6 @@ def _run_self_test(ui_dir: Path) -> int:
 
     csc = find_csc_compiler()
     img = Image.new("RGBA", (32, 32), (181, 62, 25, 255))
-    import io
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     img.save(io.BytesIO(), format="ICO", sizes=[(16, 16), (32, 32)])
@@ -59,6 +83,17 @@ def _browser_fallback_session(url: str) -> None:
     ctypes.windll.user32.MessageBoxW(0, msg, "WinCrate — Running in Browser", 0x00000040)
 
 
+def _resolve_webview_storage_dir() -> str | None:
+    """Give WinCrate a dedicated WebView2 UserDataFolder so it never collides with other pywebview apps."""
+    try:
+        local_app = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+        storage = Path(local_app) / "WinCrate" / "WebView2Data"
+        storage.mkdir(parents=True, exist_ok=True)
+        return str(storage)
+    except Exception:
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="WinCrate — Offline Windows Software Packager")
     parser.add_argument(
@@ -82,6 +117,11 @@ def main() -> int:
     ui_dir = _APP_ROOT / "ui"
     if args.self_test:
         return _run_self_test(ui_dir)
+
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("WinCrate.DesktopApp.1.0")
+    except Exception:
+        pass
 
     server, port, ctx = start_local_server(ui_dir=ui_dir, port=args.port)
     url = f"http://127.0.0.1:{port}/"
@@ -114,7 +154,8 @@ def main() -> int:
                 kwargs: dict[str, Any] = {}
                 if initial_dir and os.path.isdir(initial_dir):
                     kwargs["directory"] = initial_dir
-                res = window.create_file_dialog(webview.FOLDER_DIALOG, **kwargs)
+                dialog_mode = getattr(getattr(webview, "FileDialog", None), "FOLDER", 20)
+                res = window.create_file_dialog(dialog_mode, **kwargs)
                 if res and len(res) > 0:
                     return str(res[0])
             except Exception:
@@ -122,6 +163,38 @@ def main() -> int:
             return None
 
         ctx.webview_folder_picker = _webview_pick_folder
+
+        def _on_shown() -> None:
+            # Apply custom wincrate.ico to WinForms window & bring cleanly to foreground
+            try:
+                ico_file = _APP_ROOT / "wincrate" / "wincrate.ico"
+                from System import Action  # type: ignore
+                from System.Drawing import Icon  # type: ignore
+                from webview.platforms.winforms import BrowserView  # type: ignore
+
+                form = BrowserView.instances.get(window.uid)
+                if form is not None:
+                    def _activate_form() -> None:
+                        try:
+                            if ico_file.is_file():
+                                form.Icon = Icon(str(ico_file))
+                            form.WindowState = 0  # FormWindowState.Normal
+                            form.TopMost = True
+                            form.Show()
+                            form.Activate()
+                            form.BringToFront()
+                            form.TopMost = False
+                        except Exception:
+                            pass
+
+                    form.Invoke(Action(_activate_form))
+            except Exception:
+                try:
+                    window.restore()
+                    window.on_top = True
+                    threading.Timer(0.2, lambda: setattr(window, "on_top", False)).start()
+                except Exception:
+                    pass
 
         def _on_loaded() -> None:
             def _on_native_drop(e: dict[str, Any]) -> None:
@@ -141,12 +214,20 @@ def main() -> int:
             except Exception:
                 pass
 
+        window.events.shown += _on_shown
         window.events.loaded += _on_loaded
+
+        storage_dir = _resolve_webview_storage_dir()
+        start_kwargs: dict[str, Any] = {"debug": False}
+        if storage_dir:
+            start_kwargs["private_mode"] = False
+            start_kwargs["storage_path"] = storage_dir
+
         try:
-            webview.start(gui="edgechromium", debug=False)
+            webview.start(gui="edgechromium", **start_kwargs)
         except Exception:
             try:
-                webview.start(debug=False)
+                webview.start(**start_kwargs)
             except Exception:
                 _browser_fallback_session(url)
     except Exception:
@@ -157,4 +238,20 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except SystemExit:
+        raise
+    except Exception as exc:
+        tb = traceback.format_exc()
+        try:
+            print(tb, file=sys.stderr, flush=True)
+        except Exception:
+            pass
+        ctypes.windll.user32.MessageBoxW(
+            0,
+            f"WinCrate encountered a startup error:\n\n{exc}\n\nDetails logged to: {_LOG_FILE or 'wincrate.log'}",
+            "WinCrate Startup Error",
+            0x00000010,
+        )
+        sys.exit(1)

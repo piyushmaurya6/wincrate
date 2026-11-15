@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -13,6 +14,9 @@ namespace WinCrateLauncher
 {
     internal static class Program
     {
+        [DllImport("user32.dll")]
+        private static extern bool AllowSetForegroundWindow(int dwProcessId);
+
         [STAThread]
         public static int Main(string[] args)
         {
@@ -49,11 +53,15 @@ namespace WinCrateLauncher
             ProcessStartInfo psi = new ProcessStartInfo(pyExe, argBuilder.ToString());
             psi.WorkingDirectory = Path.GetDirectoryName(appPy);
             psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
+            psi.CreateNoWindow = cliMode;
 
             try
             {
                 Process proc = Process.Start(psi);
+                if (proc != null && !cliMode)
+                {
+                    try { AllowSetForegroundWindow(proc.Id); } catch { }
+                }
                 if (cliMode && proc != null)
                 {
                     proc.WaitForExit();

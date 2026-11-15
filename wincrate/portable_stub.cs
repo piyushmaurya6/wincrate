@@ -142,6 +142,9 @@ namespace WinCratePortable
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
 
+        [DllImport("user32.dll")]
+        private static extern bool AllowSetForegroundWindow(int dwProcessId);
+
         [STAThread]
         public static int Main(string[] args)
         {
@@ -497,9 +500,13 @@ namespace WinCratePortable
             ProcessStartInfo psi = new ProcessStartInfo(pyExe, argBuilder.ToString());
             psi.WorkingDirectory = Path.GetDirectoryName(appPy);
             psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
+            psi.CreateNoWindow = cliMode;
 
             Process proc = Process.Start(psi);
+            if (proc != null && !cliMode)
+            {
+                try { AllowSetForegroundWindow(proc.Id); } catch { }
+            }
             if (cliMode && proc != null)
             {
                 proc.WaitForExit();
